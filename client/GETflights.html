@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <div id="conn">API Connection placeholder</div>
+    <div id="output">API Status placeholder</div>
+    <script>
+        const url = 'http://localhost:1337/flights';
+        const es = new EventSource(url);
+        
+        es.onmessage = e => {
+            document.getElementById('output').innerHTML = 
+                `<p>Local time ${new Date().toLocaleTimeString('en-US', { hour12: true })} : <span style="color:blue;">Simulation time ${e.data}</span></p>`;
+        };
+        
+        es.onerror = err => {
+            document.getElementById('conn').innerHTML = 
+                `<p style="color:red;">Error: Endpoint not responding or connection lost</p>`;
+            console.error('SSE Error:', err);
+        };
+        
+        es.onopen = () => {
+            document.getElementById('conn').innerHTML = 
+                `<p style="color:green;">SSE Connected: ${url}</p>`;
+        };
+    </script>
+</body>
+</html>
