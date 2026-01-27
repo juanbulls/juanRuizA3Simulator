@@ -23,6 +23,7 @@ docker-compose up --build
 
 3. Access the application
    - API endpoint: http://localhost:13000/flights
+   - API documentation: http://localhost:13000/api-docs
    - Test page: Open `client/GETflights.html` in your browser
 
 4. Stop the application
@@ -55,3 +56,9 @@ node server.js
 ```
 
 4. Access at http://localhost:3000/flights
+
+## API Documentation
+
+The API uses Swagger/OpenAPI for interactive documentation. Access it at:
+- Docker: http://localhost:13000/api-docs
+- Local: http://localhost:3000/api-docs
