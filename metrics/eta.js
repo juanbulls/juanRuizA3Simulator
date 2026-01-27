@@ -6,14 +6,15 @@
  */
 function calculateEta(elapsedMinutes, phaseSchedule) {
   // Get total flight duration (last phase's accumulated minutes)
-  const totalFlightMinutes = phaseSchedule[phaseSchedule.length - 1].accumulatedMinutes;
-  
+  const totalFlightMinutes =
+    phaseSchedule[phaseSchedule.length - 1].accumulatedMinutes;
+
   // Calculate remaining minutes
   const remainingMinutes = Math.max(0, totalFlightMinutes - elapsedMinutes);
-  
+
   // Convert to hours
   const etaHours = remainingMinutes / 60;
-  
+
   // Round to 2 decimal places
   return Math.round(etaHours * 100) / 100;
 }
