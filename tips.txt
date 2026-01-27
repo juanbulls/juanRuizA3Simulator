@@ -22,3 +22,7 @@ docker-compose up --build
     Taking off climbing 60
     Cruise 80
     Descending 90
+
+# Position
+    lat: from 33.94 to 41.0
+    lng: from 118.41 to 73.78
