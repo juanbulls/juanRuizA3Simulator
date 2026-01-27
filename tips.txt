@@ -14,4 +14,6 @@ docker-compose up --build
 # Air speed
     Boarding 0
     Taxi in or out 20
-    
+    Climbing Crusing and landing
+    Finish 0 again
+
