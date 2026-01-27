@@ -1,3 +1,5 @@
 # After making changes in schemas run:
 docker-compose down -v
+
+# If only need tu update logic run:
 docker-compose up --build

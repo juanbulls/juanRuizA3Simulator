@@ -1,8 +1,10 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./swagger");
+const cron = require("node-cron");
 const pool = require("./db");
 const initDatabase = require("./initDb");
+const { updateFlightMetrics } = require("./simulator");
 const port = 3000;
 
 const app = express();
@@ -63,6 +65,11 @@ app.get("/flights", async (req, res) => {
 
 // Start server after database initialization
 initDatabase().then(() => {
+  // Start flight simulator cron job (runs every 5 seconds)
+  cron.schedule("*/5 * * * * *", () => {
+    updateFlightMetrics();
+  });
+
   app.listen(port, () =>
     console.log(
       `Juan Ruiz simulator application server started on port ${port}`,
