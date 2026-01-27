@@ -1,0 +1,71 @@
+openapi: 3.0.0
+info:
+  title: Juan Ruiz A3 Simulator API
+  version: 1.0.0
+  description: Flight Simulator API - LAX to JFK simulation with real-time metrics
+servers:
+  - url: http://localhost:3000
+    description: Development server
+  - url: http://localhost:13000
+    description: Docker server
+
+paths:
+  /flights:
+    post:
+      summary: Start a new flight simulation
+      description: Creates a new flight record in the database and starts the simulation
+      responses:
+        "201":
+          description: Flight created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Flight ID
+                  status:
+                    type: string
+                    description: Flight status (Active)
+                  start_time:
+                    type: string
+                    format: date-time
+                    description: Flight start timestamp
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    get:
+      summary: Get real-time flight data stream
+      description: Server-Sent Events endpoint that streams active flight records every second
+      responses:
+        "200":
+          description: SSE stream of flight data
+          content:
+            text/event-stream:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Flight ID
+                    status:
+                      type: string
+                      description: Flight status
+                    start_time:
+                      type: string
+                      format: date-time
+                      description: Flight start timestamp
+                    end_time:
+                      type: string
+                      format: date-time
+                      description: Flight end timestamp

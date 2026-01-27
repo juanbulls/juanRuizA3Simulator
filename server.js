@@ -1,62 +1,31 @@
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
-const swaggerJsdoc = require("swagger-jsdoc");
+const swaggerSpec = require("./swagger");
 const pool = require("./db");
 const initDatabase = require("./initDb");
 const port = 3000;
 
 const app = express();
 
-// Swagger configuration
-const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Juan Ruiz A3 Simulator API",
-      version: "1.0.0",
-      description: "Flight Simulator API with Server-Sent Events",
-    },
-    servers: [
-      {
-        url: `http://localhost:${port}`,
-        description: "Development server",
-      },
-    ],
-  },
-  apis: ["./server.js"],
-};
-
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
+// Swagger documentation
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-/**
- * @swagger
- * /flights:
- *   get:
- *     summary: Get real-time flight data stream
- *     description: Server-Sent Events endpoint that streams active flight records every second
- *     responses:
- *       200:
- *         description: SSE stream of flight data
- *         content:
- *           text/event-stream:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: integer
- *                     description: Flight ID
- *                   phase:
- *                     type: string
- *                     description: Current flight phase
- *                   start:
- *                     type: string
- *                     format: date-time
- *                     description: Flight start timestamp
- */
+// Middleware
+app.use(express.json());
+
 // Routes
+app.post("/flights", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "INSERT INTO flights DEFAULT VALUES RETURNING *",
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error creating flight:", err);
+    res.status(500).json({ error: "Failed to create flight" });
+  }
+});
+
 app.get("/flights", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -66,9 +35,7 @@ app.get("/flights", async (req, res) => {
 
   const intervalId = setInterval(async () => {
     try {
-      const result = await pool.query(
-        "SELECT * FROM flights ORDER BY id",
-      );
+      const result = await pool.query("SELECT * FROM flights ORDER BY id");
       const flights = result.rows;
       res.write(`data: ${JSON.stringify(flights)}\n\n`);
     } catch (err) {
