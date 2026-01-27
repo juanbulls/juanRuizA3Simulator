@@ -3,3 +3,15 @@ docker-compose down -v
 
 # If only need tu update logic run:
 docker-compose up --build
+
+
+# Parameters of flight from LAX to JFK
+# Altitude
+    LAX = 125 ft
+    Cruising = 33,000 ft
+    JFK = 13 ft
+
+# Air speed
+    Boarding 0
+    Taxi in or out 20
+    
