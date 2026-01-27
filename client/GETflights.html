@@ -7,6 +7,8 @@
     <div id="conn">API Connection placeholder</div>
     <button id="startFlight">Start New Flight Simulation</button>
     <div id="output">API Status placeholder</div>
+    <p class="flight-hint">Click on a flight to see metrics if active, or history if completed</p>
+    <div id="details"></div>
     <script>
       const url = "http://localhost:13000/flights";
       const es = new EventSource(url);
@@ -30,6 +32,20 @@
           }
         });
 
+      // Handle flight row click
+      function handleFlightClick(event) {
+        const flightId = event.currentTarget.dataset.id;
+        const status = event.currentTarget.dataset.status;
+        
+        const detailsDiv = document.getElementById("details");
+        
+        if (status === 'Active') {
+          detailsDiv.innerHTML = `<h2>Metrics for flight ${flightId}</h2>`;
+        } else if (status === 'Completed') {
+          detailsDiv.innerHTML = `<h2>History for flight ${flightId}</h2>`;
+        }
+      }
+
       es.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data);
@@ -47,7 +63,7 @@
             tableHTML += "</tr></thead><tbody>";
 
             data.forEach((row) => {
-              tableHTML += "<tr>";
+              tableHTML += `<tr class="clickable-row" data-id="${row.id}" data-status="${row.status}">`;
               columns.forEach((col) => {
                 tableHTML += `<td>${row[col]}</td>`;
               });
@@ -56,6 +72,11 @@
 
             tableHTML += "</tbody></table>";
             document.getElementById("output").innerHTML = tableHTML;
+            
+            // Add click handlers to rows
+            document.querySelectorAll('.clickable-row').forEach(row => {
+              row.addEventListener('click', handleFlightClick);
+            });
           }
         } catch (err) {
           console.error("Error parsing data:", err);
