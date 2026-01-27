@@ -1,0 +1,56 @@
+Flight Status Simulator Coding Assessment
+Overview
+Build a service that simulates a commercial flight from LAX to JFK, exposing real-time flight metrics via a REST API. This assessment evaluates your ability to design, implement, and document a small but complete backend service.
+Time Limit: 1 day from receipt
+
+Submission: GitHub repository (private with access granted)
+________________________________________
+Requirements
+Flight Simulation
+Simulate a gate-to-gate flight (~5 hours) with realistic phase transitions:
+Phase	Duration (approx)
+Boarding	30 min
+Taxi Out	15 min
+Takeoff/Climb	25 min
+Cruise	3.5 hours
+Descent	25 min
+Landing	5 min
+Taxi In	10 min
+Generate flight metrics at regular intervals. Metrics should include:
+●	Current phase
+●	Altitude (feet)
+●	Airspeed (knots)
+●	Heading (degrees)
+●	Position (latitude/longitude)
+●	Fuel remaining (gallons or percentage)
+●	Outside air temperature
+●	Estimated time to arrival
+Simulation time can be accelerated (e.g., 1 second = 1 minute of flight time).
+REST API
+Implement the following endpoints:
+Method	Endpoint	Description
+POST	/flights	Start a new flight simulation
+GET	/flights	List all flights (active and completed)
+GET	/flights/{id}	Current status and latest metrics
+GET	/flights/{id}/history	Full metric history for a flight
+Technical Requirements
+●	Persistence: Store flight data in a database (your choice — SQLite, PostgreSQL, MongoDB, etc.)
+●	Error Handling: Return appropriate HTTP status codes and error messages
+●	Validation: Validate inputs; handle edge cases gracefully
+●	Documentation: Include a README with:
+○	Setup and run instructions
+○	API usage examples
+○	Any assumptions or design decisions
+●	Containerization (Dockerfile / docker-compose)
+●	Unit or integration tests
+Bonus (Optional)
+●	WebSocket or SSE endpoint for real-time metric streaming
+●	OpenAPI/Swagger documentation
+________________________________________
+Submission Checklist
+●	Code compiles and runs with documented instructions
+●	All required endpoints functional
+●	Persistence implemented
+●	README complete
+●	Repository shared (if private, grant access to: andrewlombardictr,yamaszone)
+
