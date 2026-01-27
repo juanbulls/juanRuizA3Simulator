@@ -8,11 +8,11 @@ const TIME_SCALE = 60;
 const PHASE_SCHEDULE = [
   { phase: "Boarding", duration: 30, accumulatedMinutes: 30 },
   { phase: "Taxi Out", duration: 15, accumulatedMinutes: 45 }, // 30 + 15
-  { phase: "Takeoff Climb", duration: 25, accumulatedMinutes: 70 }, // 45 + 25
-  { phase: "Cruise", duration: 210, accumulatedMinutes: 280 }, // 70 + 210 (3.5 hours)
-  { phase: "Descent", duration: 25, accumulatedMinutes: 305 }, // 280 + 25
-  { phase: "Landing", duration: 5, accumulatedMinutes: 310 }, // 305 + 5
-  { phase: "Taxi In", duration: 10, accumulatedMinutes: 320 }, // 310 + 10
+  { phase: "Takeoff Climb", duration: 25, accumulatedMinutes: 70 }, // 45 + 25 (1:10)
+  { phase: "Cruise", duration: 210, accumulatedMinutes: 280 }, // 70 + 210 (4:50)
+  { phase: "Descent", duration: 25, accumulatedMinutes: 305 }, // 280 + 25 (5:15)
+  { phase: "Landing", duration: 5, accumulatedMinutes: 310 }, // 305 + 5 (5:20)
+  { phase: "Taxi In", duration: 10, accumulatedMinutes: 320 }, // 310 + 10 (5:30)
 ];
 
 /**
