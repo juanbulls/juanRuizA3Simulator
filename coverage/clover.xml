@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1769499865176" clover="3.2.0">
-  <project timestamp="1769499865176" name="All files">
+<coverage generated="1769500662966" clover="3.2.0">
+  <project timestamp="1769500662966" name="All files">
     <metrics statements="142" coveredstatements="98" conditionals="56" coveredconditionals="48" methods="16" coveredmethods="14" elements="214" coveredelements="160" complexity="0" loc="142" ncloc="142" packages="2" files="8" classes="8"/>
     <package name="juanRuizA3Simulator">
       <metrics statements="44" coveredstatements="0" conditionals="8" coveredconditionals="0" methods="2" coveredmethods="0"/>
