@@ -101,3 +101,6 @@ Tests cover the following metric calculations:
 - **ETA** - Remaining flight time calculations
 
 Coverage reports are generated in the `coverage/` directory after running tests.
+
+### Video demo
+To see a video demo, open the file simDemo_lt2.pm4
