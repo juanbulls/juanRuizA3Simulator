@@ -60,5 +60,44 @@ node server.js
 ## API Documentation
 
 The API uses Swagger/OpenAPI for interactive documentation. Access it at:
+
 - Docker: http://localhost:13000/api-docs
 - Local: http://localhost:3000/api-docs
+
+## Testing
+
+This project includes comprehensive unit tests for all metric calculation functions.
+
+### Run All Tests
+
+```bash
+npm test
+```
+
+This will run all tests and display a coverage report showing:
+
+- Test results for all metric calculations
+- Code coverage statistics
+- Coverage details for each file
+
+### Run Tests in Watch Mode
+
+For development, you can run tests in watch mode (automatically re-runs tests when files change):
+
+```bash
+npm run test:watch
+```
+
+### Test Coverage
+
+Tests cover the following metric calculations:
+
+- **Airspeed** - Phase-based speed calculations
+- **Altitude** - Interpolation during climb and descent
+- **Heading** - Phase-based heading values
+- **Position** - Latitude/longitude interpolation during cruise
+- **Fuel** - Progressive fuel consumption
+- **Temperature** - Temperature changes during flight phases
+- **ETA** - Remaining flight time calculations
+
+Coverage reports are generated in the `coverage/` directory after running tests.
