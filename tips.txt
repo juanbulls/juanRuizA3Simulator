@@ -26,3 +26,7 @@ docker-compose up --build
 # Position
     lat: from 33.94 to 41.0
     lng: from 118.41 to 73.78
+
+# Fuel
+    Before take off 65%
+    after landing 18%
