@@ -1,0 +1,3 @@
+# After making changes in schemas run:
+docker-compose down -v
+docker-compose up --build
