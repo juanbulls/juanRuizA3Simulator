@@ -48,7 +48,23 @@ app.get("/flights", async (req, res) => {
 
   const intervalId = setInterval(async () => {
     try {
-      const result = await pool.query("SELECT * FROM flights ORDER BY id");
+      const result = await pool.query(`
+        SELECT 
+          f.id,
+          m.phase,
+          f.start_time,
+          f.end_time,
+          f.status
+        FROM flights f
+        LEFT JOIN LATERAL (
+          SELECT phase 
+          FROM metrics 
+          WHERE flight_id = f.id 
+          ORDER BY id DESC 
+          LIMIT 1
+        ) m ON true
+        ORDER BY f.id
+      `);
       const flights = result.rows;
       res.write(`data: ${JSON.stringify(flights)}\n\n`);
     } catch (err) {

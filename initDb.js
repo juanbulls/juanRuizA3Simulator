@@ -35,9 +35,9 @@ const initDatabase = async () => {
       await pool.query(`
         CREATE TABLE IF NOT EXISTS flights (
           id SERIAL PRIMARY KEY,
-          status status_enum DEFAULT 'Active',
           start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          end_time TIMESTAMP
+          end_time TIMESTAMP,
+          status status_enum DEFAULT 'Active'
         )
       `);
 
