@@ -1,6 +1,7 @@
 const pool = require("./db");
 const { calculateAltitude } = require("./metrics/altitude");
 const { calculateAirspeed } = require("./metrics/airspeed");
+const { calculateHeading } = require("./metrics/heading");
 
 // Time scale: 1 second of real time = TIME_SCALE seconds of simulation time
 // Example: 60 means 1 second real time = 1 minute simulation time
@@ -67,6 +68,9 @@ async function updateFlightMetrics() {
       // Calculate airspeed for current phase
       const airspeed = calculateAirspeed(currentPhase);
 
+      // Calculate heading for current phase
+      const heading = calculateHeading(currentPhase);
+
       // Check if we have an existing metric for this flight
       const existingMetric = await pool.query(
         `SELECT id, phase FROM metrics 
@@ -89,27 +93,27 @@ async function updateFlightMetrics() {
             [existingMetric.rows[0].id],
           );
 
-          // Insert new metric for current phase with altitude and airspeed
+          // Insert new metric for current phase with altitude, airspeed, and heading
           await pool.query(
-            `INSERT INTO metrics (flight_id, phase, altitude, airspeed) 
-             VALUES ($1, $2, $3, $4)`,
-            [flight.id, currentPhase, altitude, airspeed],
+            `INSERT INTO metrics (flight_id, phase, altitude, airspeed, heading) 
+             VALUES ($1, $2, $3, $4, $5)`,
+            [flight.id, currentPhase, altitude, airspeed, heading],
           );
         } else {
-          // Same phase, update altitude and airspeed
+          // Same phase, update altitude, airspeed, and heading
           await pool.query(
             `UPDATE metrics 
-             SET altitude = $1, airspeed = $2 
-             WHERE id = $3`,
-            [altitude, airspeed, existingMetric.rows[0].id],
+             SET altitude = $1, airspeed = $2, heading = $3 
+             WHERE id = $4`,
+            [altitude, airspeed, heading, existingMetric.rows[0].id],
           );
         }
       } else {
-        // No metrics yet, insert first one with altitude and airspeed
+        // No metrics yet, insert first one with altitude, airspeed, and heading
         await pool.query(
-          `INSERT INTO metrics (flight_id, phase, altitude, airspeed) 
-           VALUES ($1, $2, $3, $4)`,
-          [flight.id, currentPhase, altitude, airspeed],
+          `INSERT INTO metrics (flight_id, phase, altitude, airspeed, heading) 
+           VALUES ($1, $2, $3, $4, $5)`,
+          [flight.id, currentPhase, altitude, airspeed, heading],
         );
       }
 

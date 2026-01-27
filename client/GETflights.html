@@ -77,6 +77,15 @@
         document.getElementById("conn").innerHTML =
           `<p style="color:red;">Error: Endpoint not responding or connection lost</p>`;
         console.error("SSE Error:", err);
+
+        // Clear details section when connection is lost
+        document.getElementById("details").innerHTML = "";
+
+        // Close any active metrics SSE connection
+        if (activeMetricsEventSource) {
+          activeMetricsEventSource.close();
+          activeMetricsEventSource = null;
+        }
       };
 
       es.onopen = () => {

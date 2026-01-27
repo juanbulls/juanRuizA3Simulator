@@ -17,3 +17,8 @@ docker-compose up --build
     Climbing Crusing and landing
     Finish 0 again
 
+# Heading
+    Boarding and taxing null
+    Taking off climbing 60
+    Cruise 80
+    Descending 90
