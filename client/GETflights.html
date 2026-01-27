@@ -4,7 +4,7 @@
     <div id="conn">API Connection placeholder</div>
     <div id="output">API Status placeholder</div>
     <script>
-        const url = 'http://localhost:1337/flights';
+        const url = 'http://localhost:13000/flights';
         const es = new EventSource(url);
         
         es.onmessage = e => {
