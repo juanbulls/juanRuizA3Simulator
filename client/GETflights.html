@@ -109,7 +109,7 @@
 
             // Use SSE for active flights
             detailsDiv.innerHTML = `<h3>${title}</h3><p>Loading metrics...</p>`;
-            
+
             activeMetricsEventSource = new EventSource(endpoint);
 
             activeMetricsEventSource.onmessage = (e) => {
@@ -144,7 +144,6 @@
               console.error("Metrics SSE Error:", err);
               detailsDiv.innerHTML = `<h3>${title}</h3><p style="color:red;">Error loading metrics</p>`;
             };
-
           } else {
             // For completed flights, fetch history once (no SSE needed)
             endpoint = `http://localhost:13000/flights/${flightId}/history`;

@@ -59,7 +59,9 @@ app.get("/flights/:id", async (req, res) => {
       );
 
       if (result.rows.length === 0) {
-        res.write(`data: ${JSON.stringify({ error: "No metrics available" })}\n\n`);
+        res.write(
+          `data: ${JSON.stringify({ error: "No metrics available" })}\n\n`,
+        );
       } else {
         res.write(`data: ${JSON.stringify(result.rows[0])}\n\n`);
       }
@@ -80,7 +82,7 @@ app.get("/flights/:id/history", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await pool.query(
-      "SELECT * FROM metrics WHERE flight_id = $1 ORDER BY id ASC",
+      "SELECT id, finish, phase FROM metrics WHERE flight_id = $1 ORDER BY id ASC",
       [id],
     );
 
