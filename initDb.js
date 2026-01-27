@@ -55,7 +55,7 @@ const initDatabase = async () => {
           longitude DECIMAL(9, 6),
           fuel_remaining DECIMAL(5, 2),
           outside_temp DECIMAL(5, 2),
-          eta INTEGER
+          eta DECIMAL(5, 2)
         )
       `);
 

@@ -5,6 +5,7 @@ const { calculateHeading } = require("./metrics/heading");
 const { calculatePosition } = require("./metrics/position");
 const { calculateFuel } = require("./metrics/fuel");
 const { calculateTemperature } = require("./metrics/temperature");
+const { calculateEta } = require("./metrics/eta");
 
 // Time scale: 1 second of real time = TIME_SCALE seconds of simulation time
 // Example: 60 means 1 second real time = 1 minute simulation time
@@ -95,6 +96,9 @@ async function updateFlightMetrics() {
         PHASE_SCHEDULE,
       );
 
+      // Calculate ETA (remaining time in hours)
+      const eta = calculateEta(elapsedSimMinutes, PHASE_SCHEDULE);
+
       // Check if we have an existing metric for this flight
       const existingMetric = await pool.query(
         `SELECT id, phase FROM metrics 
@@ -119,8 +123,8 @@ async function updateFlightMetrics() {
 
           // Insert new metric for current phase with all calculated values
           await pool.query(
-            `INSERT INTO metrics (flight_id, phase, altitude, airspeed, heading, latitude, longitude, fuel_remaining, outside_temp) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+            `INSERT INTO metrics (flight_id, phase, altitude, airspeed, heading, latitude, longitude, fuel_remaining, outside_temp, eta) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
             [
               flight.id,
               currentPhase,
@@ -131,14 +135,15 @@ async function updateFlightMetrics() {
               position.longitude,
               fuel,
               temperature,
+              eta,
             ],
           );
         } else {
           // Same phase, update all calculated values
           await pool.query(
             `UPDATE metrics 
-             SET altitude = $1, airspeed = $2, heading = $3, latitude = $4, longitude = $5, fuel_remaining = $6, outside_temp = $7 
-             WHERE id = $8`,
+             SET altitude = $1, airspeed = $2, heading = $3, latitude = $4, longitude = $5, fuel_remaining = $6, outside_temp = $7, eta = $8 
+             WHERE id = $9`,
             [
               altitude,
               airspeed,
@@ -147,6 +152,7 @@ async function updateFlightMetrics() {
               position.longitude,
               fuel,
               temperature,
+              eta,
               existingMetric.rows[0].id,
             ],
           );
@@ -154,8 +160,8 @@ async function updateFlightMetrics() {
       } else {
         // No metrics yet, insert first one with all calculated values
         await pool.query(
-          `INSERT INTO metrics (flight_id, phase, altitude, airspeed, heading, latitude, longitude, fuel_remaining, outside_temp) 
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          `INSERT INTO metrics (flight_id, phase, altitude, airspeed, heading, latitude, longitude, fuel_remaining, outside_temp, eta) 
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
           [
             flight.id,
             currentPhase,
@@ -166,6 +172,7 @@ async function updateFlightMetrics() {
             position.longitude,
             fuel,
             temperature,
+            eta,
           ],
         );
       }

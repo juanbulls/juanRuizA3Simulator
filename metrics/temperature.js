@@ -1,6 +1,6 @@
 // Temperature constants
 const LAX_TEMP = 65; // Fahrenheit
-const CRUISE_TEMP = -67; // Fahrenheit
+const CRUISE_TEMP = 67; // Fahrenheit
 const JFK_TEMP = 55; // Fahrenheit
 
 /**
