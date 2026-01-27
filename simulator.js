@@ -1,13 +1,9 @@
 const pool = require("./db");
+const { calculateAltitude } = require("./metrics/altitude");
 
 // Time scale: 1 second of real time = TIME_SCALE seconds of simulation time
 // Example: 60 means 1 second real time = 1 minute simulation time
 const TIME_SCALE = 60;
-
-// Altitude constants
-const LAX_ALTITUDE = 125; // feet
-const CRUISING_ALTITUDE = 33000; // feet
-const JFK_ALTITUDE = 13; // feet
 
 // Phase durations in minutes with accumulated times
 const PHASE_SCHEDULE = [
@@ -36,54 +32,6 @@ function getCurrentPhase(elapsedMinutes) {
 }
 
 /**
- * Calculate altitude based on current phase and progress
- * @param {string} phase - Current flight phase
- * @param {number} elapsedMinutes - Total minutes elapsed in simulation
- * @returns {number} Altitude in feet
- */
-function calculateAltitude(phase, elapsedMinutes) {
-  switch (phase) {
-    case "Boarding":
-    case "Taxi Out":
-      return LAX_ALTITUDE;
-
-    case "Takeoff Climb": {
-      // Find the phase in schedule
-      const phaseInfo = PHASE_SCHEDULE.find((p) => p.phase === "Takeoff Climb");
-      const phaseStartMinutes = phaseInfo.accumulatedMinutes - phaseInfo.duration;
-      const minutesIntoPhase = elapsedMinutes - phaseStartMinutes;
-      const progress = minutesIntoPhase / phaseInfo.duration; // 0 to 1
-
-      // Linear interpolation from LAX_ALTITUDE to CRUISING_ALTITUDE
-      const altitudeGain = CRUISING_ALTITUDE - LAX_ALTITUDE;
-      return Math.round(LAX_ALTITUDE + altitudeGain * progress);
-    }
-
-    case "Cruise":
-      return CRUISING_ALTITUDE;
-
-    case "Descent": {
-      // Find the phase in schedule
-      const phaseInfo = PHASE_SCHEDULE.find((p) => p.phase === "Descent");
-      const phaseStartMinutes = phaseInfo.accumulatedMinutes - phaseInfo.duration;
-      const minutesIntoPhase = elapsedMinutes - phaseStartMinutes;
-      const progress = minutesIntoPhase / phaseInfo.duration; // 0 to 1
-
-      // Linear interpolation from CRUISING_ALTITUDE to JFK_ALTITUDE
-      const altitudeLoss = CRUISING_ALTITUDE - JFK_ALTITUDE;
-      return Math.round(CRUISING_ALTITUDE - altitudeLoss * progress);
-    }
-
-    case "Landing":
-    case "Taxi In":
-      return JFK_ALTITUDE;
-
-    default:
-      return LAX_ALTITUDE;
-  }
-}
-
-/**
  * Update metrics for all active flights
  */
 async function updateFlightMetrics() {
@@ -109,7 +57,11 @@ async function updateFlightMetrics() {
       const currentPhase = getCurrentPhase(elapsedSimMinutes);
 
       // Calculate altitude for current phase
-      const altitude = calculateAltitude(currentPhase, elapsedSimMinutes);
+      const altitude = calculateAltitude(
+        currentPhase,
+        elapsedSimMinutes,
+        PHASE_SCHEDULE,
+      );
 
       // Check if we have an existing metric for this flight
       const existingMetric = await pool.query(
