@@ -41,7 +41,6 @@ paths:
                 properties:
                   error:
                     type: string
-
     get:
       summary: Get real-time flight data stream
       description: Server-Sent Events endpoint that streams active flight records every second
@@ -69,3 +68,148 @@ paths:
                       type: string
                       format: date-time
                       description: Flight end timestamp
+                    phase:
+                      type: string
+                      description: Current flight phase
+
+  /flights/{id}:
+    get:
+      summary: Get latest metrics for a specific flight
+      description: Returns the most recent metric data for a flight
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Flight ID
+      responses:
+        "200":
+          description: Latest metric data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    description: Metric ID
+                  flight_id:
+                    type: integer
+                    description: Flight ID
+                  finish:
+                    type: string
+                    format: date-time
+                    nullable: true
+                    description: Phase finish timestamp
+                  phase:
+                    type: string
+                    description: Current phase
+                  altitude:
+                    type: integer
+                    nullable: true
+                    description: Current altitude in feet
+                  airspeed:
+                    type: integer
+                    nullable: true
+                    description: Current airspeed in knots
+                  heading:
+                    type: integer
+                    nullable: true
+                    description: Current heading in degrees
+                  latitude:
+                    type: number
+                    nullable: true
+                    description: Current latitude
+                  longitude:
+                    type: number
+                    nullable: true
+                    description: Current longitude
+                  fuel_remaining:
+                    type: number
+                    nullable: true
+                    description: Fuel remaining percentage
+                  outside_temp:
+                    type: number
+                    nullable: true
+                    description: Outside temperature in Celsius
+                  eta:
+                    type: integer
+                    nullable: true
+                    description: Estimated time to arrival in minutes
+        "404":
+          description: No metrics found for flight
+        "500":
+          description: Server error
+
+  /flights/{id}/history:
+    get:
+      summary: Get full metric history for a flight
+      description: Returns all historical metrics for a completed or active flight
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Flight ID
+      responses:
+        "200":
+          description: Full metric history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: Metric ID
+                    flight_id:
+                      type: integer
+                      description: Flight ID
+                    finish:
+                      type: string
+                      format: date-time
+                      nullable: true
+                      description: Phase finish timestamp
+                    phase:
+                      type: string
+                      description: Flight phase
+                    altitude:
+                      type: integer
+                      nullable: true
+                      description: Altitude in feet
+                    airspeed:
+                      type: integer
+                      nullable: true
+                      description: Airspeed in knots
+                    heading:
+                      type: integer
+                      nullable: true
+                      description: Heading in degrees
+                    latitude:
+                      type: number
+                      nullable: true
+                      description: Latitude
+                    longitude:
+                      type: number
+                      nullable: true
+                      description: Longitude
+                    fuel_remaining:
+                      type: number
+                      nullable: true
+                      description: Fuel remaining percentage
+                    outside_temp:
+                      type: number
+                      nullable: true
+                      description: Outside temperature in Celsius
+                    eta:
+                      type: integer
+                      nullable: true
+                      description: Estimated time to arrival in minutes
+        "404":
+          description: Flight not found or no history available
+        "500":
+          description: Server error

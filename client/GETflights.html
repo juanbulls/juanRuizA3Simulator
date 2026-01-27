@@ -7,7 +7,9 @@
     <div id="conn">API Connection placeholder</div>
     <button id="startFlight">Start New Flight Simulation</button>
     <div id="output">API Status placeholder</div>
-    <p class="flight-hint">Click on a flight to see metrics if active, or history if completed</p>
+    <p class="flight-hint">
+      Click on a flight to see metrics if active, or history if completed
+    </p>
     <div id="details"></div>
     <script>
       const url = "http://localhost:13000/flights";
@@ -31,20 +33,6 @@
             alert("Error creating flight");
           }
         });
-
-      // Handle flight row click
-      function handleFlightClick(event) {
-        const flightId = event.currentTarget.dataset.id;
-        const status = event.currentTarget.dataset.status;
-        
-        const detailsDiv = document.getElementById("details");
-        
-        if (status === 'Active') {
-          detailsDiv.innerHTML = `<h2>Metrics for flight ${flightId}</h2>`;
-        } else if (status === 'Completed') {
-          detailsDiv.innerHTML = `<h2>History for flight ${flightId}</h2>`;
-        }
-      }
 
       es.onmessage = (e) => {
         try {
@@ -72,10 +60,10 @@
 
             tableHTML += "</tbody></table>";
             document.getElementById("output").innerHTML = tableHTML;
-            
+
             // Add click handlers to rows
-            document.querySelectorAll('.clickable-row').forEach(row => {
-              row.addEventListener('click', handleFlightClick);
+            document.querySelectorAll(".clickable-row").forEach((row) => {
+              row.addEventListener("click", handleFlightClick);
             });
           }
         } catch (err) {
@@ -95,6 +83,113 @@
         document.getElementById("conn").innerHTML =
           `<p style="color:green;">SSE Connected: ${url}</p>`;
       };
+
+      // Handle flight row click
+      let activeMetricsEventSource = null;
+
+      async function handleFlightClick(event) {
+        const flightId = event.currentTarget.dataset.id;
+        const status = event.currentTarget.dataset.status;
+
+        const detailsDiv = document.getElementById("details");
+
+        // Close any existing SSE connection for metrics
+        if (activeMetricsEventSource) {
+          activeMetricsEventSource.close();
+          activeMetricsEventSource = null;
+        }
+
+        try {
+          let endpoint;
+          let title;
+
+          if (status === "Active") {
+            endpoint = `http://localhost:13000/flights/${flightId}`;
+            title = `Current Metrics for Flight ${flightId}`;
+
+            // Use SSE for active flights
+            detailsDiv.innerHTML = `<h3>${title}</h3><p>Loading metrics...</p>`;
+            
+            activeMetricsEventSource = new EventSource(endpoint);
+
+            activeMetricsEventSource.onmessage = (e) => {
+              try {
+                const data = JSON.parse(e.data);
+
+                if (data.error) {
+                  detailsDiv.innerHTML = `<h3>${title}</h3><p style="color:red;">${data.error}</p>`;
+                  return;
+                }
+
+                // Build table HTML
+                let html = `<h3>${title}</h3>`;
+                const columns = Object.keys(data);
+                html += "<table><thead><tr>";
+                columns.forEach((col) => {
+                  html += `<th>${col.toUpperCase()}</th>`;
+                });
+                html += "</tr></thead><tbody><tr>";
+                columns.forEach((col) => {
+                  html += `<td>${data[col] !== null ? data[col] : "N/A"}</td>`;
+                });
+                html += "</tr></tbody></table>";
+
+                detailsDiv.innerHTML = html;
+              } catch (err) {
+                console.error("Error parsing metrics data:", err);
+              }
+            };
+
+            activeMetricsEventSource.onerror = (err) => {
+              console.error("Metrics SSE Error:", err);
+              detailsDiv.innerHTML = `<h3>${title}</h3><p style="color:red;">Error loading metrics</p>`;
+            };
+
+          } else {
+            // For completed flights, fetch history once (no SSE needed)
+            endpoint = `http://localhost:13000/flights/${flightId}/history`;
+            title = `Full History for Flight ${flightId}`;
+
+            const response = await fetch(endpoint);
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            // Build table HTML
+            let html = `<h3>${title}</h3>`;
+
+            if (Array.isArray(data)) {
+              if (data.length === 0) {
+                html += "<p>No data available</p>";
+              } else {
+                const columns = Object.keys(data[0]);
+                html += "<table><thead><tr>";
+                columns.forEach((col) => {
+                  html += `<th>${col.toUpperCase()}</th>`;
+                });
+                html += "</tr></thead><tbody>";
+
+                data.forEach((row) => {
+                  html += "<tr>";
+                  columns.forEach((col) => {
+                    html += `<td>${row[col] !== null ? row[col] : "N/A"}</td>`;
+                  });
+                  html += "</tr>";
+                });
+
+                html += "</tbody></table>";
+              }
+            }
+
+            detailsDiv.innerHTML = html;
+          }
+        } catch (err) {
+          console.error("Error fetching flight details:", err);
+          detailsDiv.innerHTML = `<p style="color:red;">Error loading details: ${err.message}</p>`;
+        }
+      }
     </script>
   </body>
 </html>
