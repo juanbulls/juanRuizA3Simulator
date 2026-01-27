@@ -11,7 +11,7 @@ Flight Simulator API with Server-Sent Events (SSE)
 1. Clone this repository
 
 ```bash
-git clone [<repository-url>](https://github.com/juanbulls/juanRuizA3Simulator)
+git clone https://github.com/juanbulls/juanRuizA3Simulator
 cd juanRuizA3Simulator
 ```
 
