@@ -67,7 +67,7 @@ app.get("/flights", async (req, res) => {
   const intervalId = setInterval(async () => {
     try {
       const result = await pool.query(
-        "SELECT * FROM active ORDER BY id",
+        "SELECT * FROM flights ORDER BY id",
       );
       const flights = result.rows;
       res.write(`data: ${JSON.stringify(flights)}\n\n`);

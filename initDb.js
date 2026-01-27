@@ -31,13 +31,31 @@ const initDatabase = async () => {
         END $$;
       `);
 
-      // Create table with proper schema
+      // Create flights table
       await pool.query(`
-        CREATE TABLE IF NOT EXISTS active (
+        CREATE TABLE IF NOT EXISTS flights (
           id SERIAL PRIMARY KEY,
-          phase phase_enum DEFAULT 'Boarding',
-          start TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          status status_enum DEFAULT 'Active'
+          status status_enum DEFAULT 'Active',
+          start_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          end_time TIMESTAMP
+        )
+      `);
+
+      // Create metrics table
+      await pool.query(`
+        CREATE TABLE IF NOT EXISTS metrics (
+          id SERIAL PRIMARY KEY,
+          flight_id INTEGER NOT NULL REFERENCES flights(id) ON DELETE CASCADE,
+          timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          phase phase_enum NOT NULL,
+          altitude INTEGER,
+          airspeed INTEGER,
+          heading INTEGER,
+          latitude DECIMAL(9, 6),
+          longitude DECIMAL(9, 6),
+          fuel_remaining DECIMAL(5, 2),
+          outside_temp DECIMAL(5, 2),
+          eta INTEGER
         )
       `);
 
