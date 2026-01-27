@@ -46,6 +46,7 @@ const initDatabase = async () => {
         CREATE TABLE IF NOT EXISTS metrics (
           id SERIAL PRIMARY KEY,
           flight_id INTEGER NOT NULL REFERENCES flights(id) ON DELETE CASCADE,
+          finish TIMESTAMP,
           phase phase_enum NOT NULL,
           altitude INTEGER,
           airspeed INTEGER,

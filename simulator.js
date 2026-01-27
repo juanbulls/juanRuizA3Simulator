@@ -65,8 +65,19 @@ async function updateFlightMetrics() {
       );
 
       if (existingMetric.rows.length > 0) {
-        // Update if phase changed
-        if (existingMetric.rows[0].phase !== currentPhase) {
+        const lastPhase = existingMetric.rows[0].phase;
+
+        // If phase changed, finish the previous phase and start new one
+        if (lastPhase !== currentPhase) {
+          // Update finish time of previous phase
+          await pool.query(
+            `UPDATE metrics 
+             SET finish = NOW() 
+             WHERE id = $1`,
+            [existingMetric.rows[0].id],
+          );
+
+          // Insert new metric for current phase
           await pool.query(
             `INSERT INTO metrics (flight_id, phase) 
              VALUES ($1, $2)`,
@@ -87,6 +98,15 @@ async function updateFlightMetrics() {
         elapsedSimMinutes >=
         PHASE_SCHEDULE[PHASE_SCHEDULE.length - 1].accumulatedMinutes
       ) {
+        // Finish the last phase
+        await pool.query(
+          `UPDATE metrics 
+           SET finish = NOW() 
+           WHERE flight_id = $1 AND finish IS NULL`,
+          [flight.id],
+        );
+
+        // Mark flight as completed
         await pool.query(
           "UPDATE flights SET status = 'Completed', end_time = NOW() WHERE id = $1",
           [flight.id],
