@@ -1,27 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<body>
+  <head>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
     <div id="conn">API Connection placeholder</div>
+    <div class="timestamp">Local time: <span id="localTime"></span></div>
     <div id="output">API Status placeholder</div>
     <script>
-        const url = 'http://localhost:13000/flights';
-        const es = new EventSource(url);
-        
-        es.onmessage = e => {
-            document.getElementById('output').innerHTML = 
-                `<p>Local time ${new Date().toLocaleTimeString('en-US', { hour12: true })} : <span style="color:blue;">Simulation time ${e.data}</span></p>`;
-        };
-        
-        es.onerror = err => {
-            document.getElementById('conn').innerHTML = 
-                `<p style="color:red;">Error: Endpoint not responding or connection lost</p>`;
-            console.error('SSE Error:', err);
-        };
-        
-        es.onopen = () => {
-            document.getElementById('conn').innerHTML = 
-                `<p style="color:green;">SSE Connected: ${url}</p>`;
-        };
+      const url = "http://localhost:13000/flights";
+      const es = new EventSource(url);
+
+      es.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          document.getElementById("localTime").textContent =
+            new Date().toLocaleTimeString("en-US", { hour12: true });
+
+          if (data.length === 0) {
+            document.getElementById("output").innerHTML =
+              "<p>No data available</p>";
+          } else {
+            const columns = Object.keys(data[0]);
+
+            let tableHTML = "<table><thead><tr>";
+            columns.forEach((col) => {
+              tableHTML += `<th>${col.toUpperCase()}</th>`;
+            });
+            tableHTML += "</tr></thead><tbody>";
+
+            data.forEach((row) => {
+              tableHTML += "<tr>";
+              columns.forEach((col) => {
+                tableHTML += `<td>${row[col]}</td>`;
+              });
+              tableHTML += "</tr>";
+            });
+
+            tableHTML += "</tbody></table>";
+            document.getElementById("output").innerHTML = tableHTML;
+          }
+        } catch (err) {
+          console.error("Error parsing data:", err);
+          document.getElementById("output").innerHTML =
+            `<p style="color:red;">Error parsing data</p>`;
+        }
+      };
+
+      es.onerror = (err) => {
+        document.getElementById("conn").innerHTML =
+          `<p style="color:red;">Error: Endpoint not responding or connection lost</p>`;
+        console.error("SSE Error:", err);
+      };
+
+      es.onopen = () => {
+        document.getElementById("conn").innerHTML =
+          `<p style="color:green;">SSE Connected: ${url}</p>`;
+      };
     </script>
-</body>
+  </body>
 </html>
