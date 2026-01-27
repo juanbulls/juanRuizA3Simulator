@@ -7,6 +7,7 @@ table {
   border-collapse: collapse;
   width: 100%;
   margin-top: 20px;
+  font-size: 14px;
 }
 
 th,
@@ -27,6 +28,21 @@ tr:nth-child(even) {
 
 #conn {
   margin-bottom: 10px;
+}
+
+#startFlight {
+  background-color: #2196f3;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+#startFlight:hover {
+  background-color: #0b7dda;
 }
 
 .timestamp {

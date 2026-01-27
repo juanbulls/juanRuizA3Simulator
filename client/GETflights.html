@@ -5,17 +5,34 @@
   </head>
   <body>
     <div id="conn">API Connection placeholder</div>
-    <div class="timestamp">Local time: <span id="localTime"></span></div>
+    <button id="startFlight">Start New Flight Simulation</button>
     <div id="output">API Status placeholder</div>
     <script>
       const url = "http://localhost:13000/flights";
       const es = new EventSource(url);
 
+      // Handle start flight button
+      document
+        .getElementById("startFlight")
+        .addEventListener("click", async () => {
+          try {
+            const response = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+            });
+            const flight = await response.json();
+            if (!response.ok) {
+              alert("Failed to create flight");
+            }
+          } catch (err) {
+            console.error("Error creating flight:", err);
+            alert("Error creating flight");
+          }
+        });
+
       es.onmessage = (e) => {
         try {
           const data = JSON.parse(e.data);
-          document.getElementById("localTime").textContent =
-            new Date().toLocaleTimeString("en-US", { hour12: true });
 
           if (data.length === 0) {
             document.getElementById("output").innerHTML =
