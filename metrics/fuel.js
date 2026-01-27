@@ -11,9 +11,13 @@ const FUEL_AFTER_LANDING = 18; // percentage
  */
 function calculateFuel(phase, elapsedMinutes, phaseSchedule) {
   // Get the accumulated minutes for key phases
-  const taxiOutEnd = phaseSchedule.find((p) => p.phase === "Taxi Out").accumulatedMinutes;
-  const landingEnd = phaseSchedule.find((p) => p.phase === "Landing").accumulatedMinutes;
-  
+  const taxiOutEnd = phaseSchedule.find(
+    (p) => p.phase === "Taxi Out",
+  ).accumulatedMinutes;
+  const landingEnd = phaseSchedule.find(
+    (p) => p.phase === "Landing",
+  ).accumulatedMinutes;
+
   switch (phase) {
     case "Boarding":
     case "Taxi Out":
@@ -32,7 +36,8 @@ function calculateFuel(phase, elapsedMinutes, phaseSchedule) {
       const progress = minutesIntoFlight / flightDuration; // 0 to 1
 
       // Linear interpolation from FUEL_BEFORE_TAKEOFF to FUEL_AFTER_LANDING
-      const fuelConsumed = (FUEL_BEFORE_TAKEOFF - FUEL_AFTER_LANDING) * progress;
+      const fuelConsumed =
+        (FUEL_BEFORE_TAKEOFF - FUEL_AFTER_LANDING) * progress;
       return Math.round((FUEL_BEFORE_TAKEOFF - fuelConsumed) * 100) / 100; // Round to 2 decimal places
     }
 

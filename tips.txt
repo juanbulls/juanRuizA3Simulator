@@ -30,3 +30,8 @@ docker-compose up --build
 # Fuel
     Before take off 65%
     after landing 18%
+
+# Temperature
+    LAX = 65 F
+    Cruise = 67 F
+    JFK = 55 F
